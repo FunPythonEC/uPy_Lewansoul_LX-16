@@ -38,8 +38,7 @@ SERVO_ERROR_OVER_VOLTAGE 		= 2
 SERVO_ERROR_LOCKED_ROTOR 		= 4
 
 
-
-
+header=[0x55,0x55]
 
 def lower_byte(value):
     return int(value) % 256
@@ -86,3 +85,39 @@ class lx16(object):
 				return list(msg)
 			if (utime.ticks_us()-a)>=1450:
 				break
+
+
+#=======================WRITE METHODS===================
+	def goal_position(self,ID,angle,time):
+		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,[le(angle*100/240),le(time)])
+		self.uart.write(bytearray(packet))
+
+	def start_goal_position(self,ID,angle,time):
+		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,[le(angle*100/240),le(time)])
+		self.uart.write(bytearray(packet))
+
+	def start(self,ID):
+		packet=makePacket(ID,SERVO_MOVE_START)
+		self.uart.write(bytearray(packet))
+
+	def start_goal_position(self,ID):
+		packet=makePacket(ID,SERVO_MOVE_STOP)
+		self.uart.write(bytearray(packet))
+
+	def set_id(self,ID,NID):
+		packer=makePacket(ID,SERVO_ID_WRITE,)
+
+def le(h):
+	"""
+	Little-endian, takes a 16b number and returns an array arrange in little
+	endian or [low_byte, high_byte].
+	"""
+	h &= 0xffff  # make sure it is 16 bits
+	return [h & 0xff, h >> 8]
+
+def makePacket(ID, cmd, params=None):
+	packet=[ID, cmd,]+=params
+	return checksum(packet)
+
+def checksum(packet):
+	return header.append(255-(sum(packet) % 256))
