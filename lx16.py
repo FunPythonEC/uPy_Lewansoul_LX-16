@@ -40,16 +40,19 @@ SERVO_ERROR_LOCKED_ROTOR 		= 4
 
 header=[0x55,0x55]
 
-def lower_byte(value):
-    return int(value) % 256
+def le(h):
+	"""
+	Little-endian, takes a 16b number and returns an array arrange in little
+	endian or [low_byte, high_byte].
+	"""
+	h &= 0xffff  # make sure it is 16 bits
+	return [h & 0xff, h >> 8]
 
-
-def higher_byte(value):
-    return int(value / 256) % 256
-
-
-def word(low, high):
-return int(low) + int(high)*256
+def word(l, h):
+	"""
+	Given a low and high bit, converts the number back into a word.
+	"""
+	return (h << 8) + l
 
 class lx16(object):
 	def __init__(self, dir_com, serialid=2):
@@ -116,8 +119,10 @@ def le(h):
 	return [h & 0xff, h >> 8]
 
 def makePacket(ID, cmd, params=None):
-	packet=[ID, cmd,]+=params
+	length=3+len(params)
+	packet=[ID,length,cmd]+=params
 	return checksum(packet)
 
+255-((servo_id + length + command + sum(params)) % 256)
 def checksum(packet):
-	return header.append(255-(sum(packet) % 256))
+	return header.append(255-(sum(packet) % 256))+
