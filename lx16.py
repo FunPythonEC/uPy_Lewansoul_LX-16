@@ -1,9 +1,9 @@
 
-import machine as m
-from time import sleep, sleep_ms, sleep_us
+import machine as m #needed so that uart can be used
+from time import sleep, sleep_ms, sleep_us #in case any delay is needed
 
-SERVO_ID_ALL = 0xfe
-
+#every command available for the servo
+SERVO_ID_ALL                    = 0xfe
 SERVO_MOVE_TIME_WRITE 			= 1
 SERVO_MOVE_TIME_READ 			= 2
 SERVO_MOVE_TIME_WAIT_WRITE 		= 7
@@ -38,16 +38,19 @@ SERVO_ERROR_OVER_VOLTAGE 		= 2
 SERVO_ERROR_LOCKED_ROTOR 		= 4
 
 
-header=[0x55,0x55]
+header=[0x55,0x55] #defined to be used later (initials of the packet)
 
 class lx16(object):
+
+	#constructor
+	#default uart used in serialid, especified for esp32
 	def __init__(self, dir_com, serialid=2):
 		
-		self.baudrate=115200
-		self.serialid=serialid
+		self.baudrate=115200 #only baudrate avaiable for the servo
+		self.serialid=serialid 
 		self.dir_com=m.Pin(dir_com,m.Pin.OUT)
 
-		#definicion de objeto serial
+		#uart defined
 		try:
 			self.uart = m.UART(self.serialid,self.baudrate)
 			self.uart.init(self.baudrate, bits=8, parity=None, stop=1)
@@ -77,6 +80,7 @@ class lx16(object):
 
 
 #=======================WRITE METHODS===================
+#every writing method is here
 	def goal_position(self,ID,angle,time):
 		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,le(angle*100/240)+le(time))
 		self.uart.write(bytearray(packet))
