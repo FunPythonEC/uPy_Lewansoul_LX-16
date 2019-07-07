@@ -97,15 +97,46 @@ class lx16(object):
 		packet=makePacket(ID,SERVO_ID_WRITE,[NID])
 		self.uart.write(bytearray(packet))
 
+	def set_temp_offset_angle(self,ID,angle):
+		packet=makePacket(ID,SERVO_ANGLE_OFFSET_ADJUST,[int(angle/30*125)])
+		self.uart.write(bytearray(packet))
+
+	def set_offset_angle(self,ID,angle):
+		packet=makePacket(ID,SERVO_ANGLE_OFFSET_WRITE,[int(angle/30*125)])
+		self.uart.write(bytearray(packet))
+
+	def set_angle_limit(self,ID,minangle,maxangle):
+		packet=makePacket(ID,SERVO_ANGLE_LIMIT_WRITE,le(int(minangle/240*1000))+le(int(maxangle/240*1000)))
+		self.uart.write(bytearray(packet))
+
+	def set_vin_limit(self,ID,minvin,maxvin):
+		packet=makePacket(ID,SERVO_VIN_LIMIT_WRITE,le(minvin)+le(maxvin))
+		self.uart.write(bytearray(packet))
+
+	def set_max_temp_limit(self,ID,temp):
+		packet=makePacket(ID,SERVO_TEMP_MAX_LIMIT_WRITE,[temp])
+		self.uart.write(bytearray(packet))
+
+	def set_load_status(self,ID,status):
+		packet=makePacket(ID,SERVO_LOAD_OR_UNLOAD_WRITE,[status])
+		self.uart.write(bytearray(packet))
+
+	def set_led_ctrl(self,ID,mode):
+		packet=makePacket(ID,SERVO_LED_CTRL_WRITE,[mode])
+		self.uart.write(bytearray(packet))
+
+	def set_led_error(self,ID,fault):
+		packet=makePacket(ID,SERVO_LED_ERROR_WRITE,[fault])
+		self.uart.write(bytearray(packet))
+
 	def goal_speed(self,ID,speed):
-		print(le(1)+le(speed))
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
-		print(packet)
 		self.uart.write(bytearray(packet))
 
 	def servo_mode(self,ID):
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))
 		self.uart.write(bytearray(packet))
+
 
 def makePacket(ID, cmd, params=None):
 	length=3+len(params)
