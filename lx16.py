@@ -92,23 +92,28 @@ class lx16(object):
 
 #=======================WRITE METHODS===================
 	def goal_position(self,ID,angle,time):
-		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,[le(angle*100/240),le(time)])
+		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,le(angle*100/240)+le(time))
 		self.uart.write(bytearray(packet))
 
 	def start_goal_position(self,ID,angle,time):
-		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,[le(angle*100/240),le(time)])
+		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(angle*100/240)+le(time))
 		self.uart.write(bytearray(packet))
 
 	def start(self,ID):
 		packet=makePacket(ID,SERVO_MOVE_START)
 		self.uart.write(bytearray(packet))
 
-	def start_goal_position(self,ID):
+	def stop(self,ID):
 		packet=makePacket(ID,SERVO_MOVE_STOP)
 		self.uart.write(bytearray(packet))
 
 	def set_id(self,ID,NID):
-		packer=makePacket(ID,SERVO_ID_WRITE,)
+		packet=makePacket(ID,SERVO_ID_WRITE,[NID])
+		self.uart.write(bytearray(packet))
+
+	def goal_speed(self,ID,speed):
+		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
+		self.uart.write(bytearray(packet))
 
 def le(h):
 	"""
@@ -117,6 +122,12 @@ def le(h):
 	"""
 	h &= 0xffff  # make sure it is 16 bits
 	return [h & 0xff, h >> 8]
+
+def word(l, h):
+	"""
+	Given a low and high bit, converts the number back into a word.
+	"""
+	return (h << 8) + l
 
 def makePacket(ID, cmd, params=None):
 	length=3+len(params)
