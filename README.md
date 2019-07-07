@@ -19,7 +19,7 @@ In most of the methods, `ID` needs to be identified, which corresponds to the ID
 
 | Method                                  | Description                                                  |
 | --------------------------------------- | :----------------------------------------------------------- |
-| `goal_position(ID, angle, time)`        | This method turn the servo to the specified angle in the specified time. The angle limits are between 0~240 degrees. And time goes from 0~30000 ms. |
+| `goal_position(ID, angle, time)`        | This method turn the servo to the specified angle in the specified time. The angle limits are between 0-240 degrees. And time goes from 0-30000 ms. |
 | `start_goal_position(ID, angle,time)`   | This is a special method, which needs the same as the last method to be defined. Does the same as the last method, however, it doesn't turn as soon as the method is executed unless the method `start(ID)` is executed as well. (Explained below) |
 | `start(ID)`                             | Works as a trigger for every WAIT command that is used. Triggers the last saved action in the servo. |
 | `stop(ID)`                              | Stops the servo immediately.                                 |
