@@ -115,6 +115,10 @@ class lx16(object):
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
 		self.uart.write(bytearray(packet))
 
+	def servo_mode(self,ID)
+		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))
+		self.uart.write(bytearray(packet))
+
 def le(h):
 	"""
 	Little-endian, takes a 16b number and returns an array arrange in little
