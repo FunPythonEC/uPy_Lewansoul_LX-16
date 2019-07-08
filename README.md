@@ -5,7 +5,7 @@ This uPy script will be developed with the help of the following repository: htt
 
 I will only be adapting any function and constructors needed for a better use, similar to the Dynamixel library used by Robotis.
 
-
+The file needed in which the class to control these servos is, is `lx16.py`. That is the file that should be included in you ESP to control the motor afterwards.
 
 ## Methods
 
