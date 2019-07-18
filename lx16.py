@@ -82,7 +82,8 @@ class lx16(object):
 #=======================WRITE METHODS===================
 #every writing method is here
 	def goal_position(self,ID,angle,time):
-		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,le(angle*100/240)+le(time))
+		print(int(angle*100/240))
+		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,le(int(angle*1000/240))+le(int(time)))
 		self.uart.write(bytearray(packet))
 
 	def start_goal_position(self,ID,angle,time):
@@ -143,8 +144,12 @@ class lx16(object):
 
 
 def makePacket(ID, cmd, params=None):
-	length=3+len(params)
-	packet=[ID,length,cmd]+params
+	if params:
+		length=3+len(params)
+		packet=[ID,length,cmd]+params
+	else: 
+		length=3
+		packet=[ID,length,cmd]
 	print(packet)
 	return header+packet+[checksum(packet)]
 
