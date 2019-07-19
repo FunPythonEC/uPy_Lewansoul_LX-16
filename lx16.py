@@ -87,7 +87,7 @@ class lx16(object):
 		self.uart.write(bytearray(packet))
 
 	def start_goal_position(self,ID,angle,time):
-		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(angle*100/240)+le(time))
+		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(int(angle*1000/240))+le(int(time)))
 		self.uart.write(bytearray(packet))
 
 	def start(self,ID):
