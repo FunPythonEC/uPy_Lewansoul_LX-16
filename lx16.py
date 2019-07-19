@@ -60,7 +60,6 @@ class lx16(object):
 
 	def sendPacket(self, packet):
 		self.dir_com.value(1)
-
 		try:
 			self.uart.write(bytearray(packet))
 			a=utime.ticks_us()
@@ -142,6 +141,41 @@ class lx16(object):
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))
 		self.uart.write(bytearray(packet))
 
+#=======================READ METHODS===================
+#every reading method is here
+
+	def read_goal_position(self,ID):
+		data=comread(self.uart,self.dir_com,ID,SERVO_MOVE_TIME_READ)
+		print(data)
+		return data
+
+def comread(com, dir_com, ID, cmd):
+	dir_com.value(1)
+	try:
+		pkt=bytearray(makePacket(ID,cmd))
+		com.write(pkt)
+	except Exception as e:
+		print(e)
+
+	utime.sleep_us(325)
+
+	dir_com.value(0)
+	a=utime.ticks_us()
+	data=[]
+
+	while True:
+		msg=com.read()
+
+		if msg is not None:
+			data+=list(msg)
+
+		try:
+			if data[5]==(len(data)-7):
+				print(data)
+				return data
+		except:
+			if (utime.ticks_us()-a)>=2000:
+				break
 
 def makePacket(ID, cmd, params=None):
 	if params:
