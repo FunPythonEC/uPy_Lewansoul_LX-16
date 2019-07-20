@@ -1,7 +1,7 @@
 
 import machine as m #needed so that uart can be used
 from time import sleep, sleep_ms, sleep_us #in case any delay is needed
-
+import utime
 #every command available for the servo
 SERVO_ID_ALL                    = 0xfe
 SERVO_MOVE_TIME_WRITE 			= 1
@@ -134,6 +134,7 @@ class lx16(object):
 		self.uart.write(bytearray(packet))
 
 	def goal_speed(self,ID,speed):
+		self.dir_com.value(0)
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
 		self.uart.write(bytearray(packet))
 
@@ -149,6 +150,7 @@ class lx16(object):
 		print(data)
 		return data
 
+
 def comread(com, dir_com, ID, cmd):
 	dir_com.value(1)
 	try:
@@ -157,25 +159,18 @@ def comread(com, dir_com, ID, cmd):
 	except Exception as e:
 		print(e)
 
-	utime.sleep_us(325)
+	utime.sleep_us(250)
 
 	dir_com.value(0)
 	a=utime.ticks_us()
 	data=[]
 
 	while True:
-		msg=com.read()
-
+		msg=com.read(10)
 		if msg is not None:
 			data+=list(msg)
-
-		try:
-			if data[5]==(len(data)-7):
-				print(data)
-				return data
-		except:
-			if (utime.ticks_us()-a)>=2000:
-				break
+			print(data)
+			return data
 
 def makePacket(ID, cmd, params=None):
 	if params:
