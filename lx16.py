@@ -44,7 +44,7 @@ class lx16(object):
 
 	#constructor
 	#default uart used in serialid, especified for esp32
-	def __init__(self, dir_com, serialid=2):
+	def __init__(self, dir_com, serialid=2, rtime=500):
 		
 		self.baudrate=115200 #only baudrate avaiable for the servo
 		self.serialid=serialid 
@@ -53,30 +53,9 @@ class lx16(object):
 		#uart defined
 		try:
 			self.uart = m.UART(self.serialid,self.baudrate)
-			self.uart.init(self.baudrate, bits=8, parity=None, stop=1)
+			self.uart.init(self.baudrate, bits=8, parity=None, stop=1, txbuf=0)
 		except Exception as e:
 			print(e)
-
-
-	def sendPacket(self, packet):
-		self.dir_com.value(1)
-		try:
-			self.uart.write(bytearray(packet))
-			a=utime.ticks_us()
-		except Exception as e:
-			print(e)
-
-		time.sleep_us(325)
-		self.dir_com.value(0)
-
-		while True:
-			msg=com.read()
-			if msg is not None and (utime.ticks_us()-a)>=1450:
-				print(list(msg))
-				return list(msg)
-			if (utime.ticks_us()-a)>=1450:
-				break
-
 
 #=======================WRITE METHODS===================
 #every writing method is here
@@ -134,7 +113,7 @@ class lx16(object):
 		self.uart.write(bytearray(packet))
 
 	def goal_speed(self,ID,speed):
-		self.dir_com.value(0)
+		
 		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
 		self.uart.write(bytearray(packet))
 
@@ -151,26 +130,42 @@ class lx16(object):
 		return data
 
 
-def comread(com, dir_com, ID, cmd):
-	dir_com.value(1)
-	try:
-		pkt=bytearray(makePacket(ID,cmd))
-		com.write(pkt)
-	except Exception as e:
-		print(e)
+	def sendPacket(self, packet, uart=self.uart, dir_com=self.dir_com, rtime=self.rtime, rxbuf=15):
+		dir_com.value(1) #turn on so packet is sent
+		uart.write(packet)
+		
+		#time is traced in order to know when to listen
+		tinit=utime.ticks_us()
+		while (utime.ticks_us()-tinit)<rtime:
+			pass
 
-	utime.sleep_us(250)
+		dir_com.value(0) #off to receive packet
 
-	dir_com.value(0)
-	a=utime.ticks_us()
-	data=[]
+		tinit=utime.ticks_us()
+		while (utime.ticks_us()-tinit)<1600: #timeout of 1600us
+			resp=uart.read(rxbuf)
+			if resp is not None:
+				return list(resp)
+		return None
 
-	while True:
-		msg=com.read(10)
-		if msg is not None:
-			data+=list(msg)
-			print(data)
-			return data
+
+def sendPacket(packet, uart, dir_com, rtime, rxbuf):
+	dir_com.value(1) #turn on so packet is sent
+	uart.write(packet)
+	
+	#time is traced in order to know when to listen
+	tinit=utime.ticks_us()
+	while (utime.ticks_us()-tinit)<rtime:
+		pass
+
+	dir_com.value(0) #off to receive packet
+
+	tinit=utime.ticks_us()
+	while (utime.ticks_us()-tinit)<1600: #timeout of 1600us
+		resp=uart.read(rxbuf)
+		if resp is not None:
+			return list(resp)
+	return None
 
 def makePacket(ID, cmd, params=None):
 	if params:
