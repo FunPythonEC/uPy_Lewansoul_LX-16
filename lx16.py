@@ -44,11 +44,12 @@ class lx16(object):
 
 	#constructor
 	#default uart used in serialid, especified for esp32
-	def __init__(self, dir_com, serialid=2, rtime=500):
+	def __init__(self, dir_com, serialid=2, rtime=850):
 		
 		self.baudrate=115200 #only baudrate avaiable for the servo
 		self.serialid=serialid 
 		self.dir_com=m.Pin(dir_com,m.Pin.OUT)
+		self.rtime=rtime
 
 		#uart defined
 		try:
@@ -59,97 +60,59 @@ class lx16(object):
 
 #=======================WRITE METHODS===================
 #every writing method is here
-	def goal_position(self,ID,angle,time):
-		print(int(angle*100/240))
-		packet=makePacket(ID,SERVO_MOVE_TIME_WRITE,le(int(angle*1000/240))+le(int(time)))
-		self.uart.write(bytearray(packet))
+	def goal_position(self,ID,angle,time, rxbuf=15,timeout=5000000):
+		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_TIME_WRITE,le(int(angle*1000/240))+le(int(time)))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def start_goal_position(self,ID,angle,time):
-		packet=makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(int(angle*1000/240))+le(int(time)))
-		self.uart.write(bytearray(packet))
+	def start_goal_position(self,ID,angle,time, rxbuf=15,timeout=5000000):
+		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(int(angle*1000/240))+le(int(time)))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def start(self,ID):
-		packet=makePacket(ID,SERVO_MOVE_START)
-		self.uart.write(bytearray(packet))
+	def start(self,ID, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_START)), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def stop(self,ID):
-		packet=makePacket(ID,SERVO_MOVE_STOP)
-		self.uart.write(bytearray(packet))
+	def stop(self,ID, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_STOP)), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_id(self,ID,NID):
-		packet=makePacket(ID,SERVO_ID_WRITE,[NID])
-		self.uart.write(bytearray(packet))
+	def set_id(self,ID,NID, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_ID_WRITE,[NID])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_temp_offset_angle(self,ID,angle):
-		packet=makePacket(ID,SERVO_ANGLE_OFFSET_ADJUST,[int(angle/30*125)])
-		self.uart.write(bytearray(packet))
+	def set_temp_offset_angle(self,ID,angle, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_ANGLE_OFFSET_ADJUST,[int(angle/30*125)])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_offset_angle(self,ID,angle):
-		packet=makePacket(ID,SERVO_ANGLE_OFFSET_WRITE,[int(angle/30*125)])
-		self.uart.write(bytearray(packet))
+	def set_offset_angle(self,ID,angle, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_ANGLE_OFFSET_WRITE,[int(angle/30*125)])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_angle_limit(self,ID,minangle,maxangle):
-		packet=makePacket(ID,SERVO_ANGLE_LIMIT_WRITE,le(int(minangle/240*1000))+le(int(maxangle/240*1000)))
-		self.uart.write(bytearray(packet))
+	def set_angle_limit(self,ID,minangle,maxangle, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_ANGLE_LIMIT_WRITE,le(int(minangle/240*1000))+le(int(maxangle/240*1000)))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_vin_limit(self,ID,minvin,maxvin):
-		packet=makePacket(ID,SERVO_VIN_LIMIT_WRITE,le(minvin)+le(maxvin))
-		self.uart.write(bytearray(packet))
+	def set_vin_limit(self,ID,minvin,maxvin, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_VIN_LIMIT_WRITE,le(minvin)+le(maxvin))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_max_temp_limit(self,ID,temp):
-		packet=makePacket(ID,SERVO_TEMP_MAX_LIMIT_WRITE,[temp])
-		self.uart.write(bytearray(packet))
+	def set_max_temp_limit(self,ID,temp, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_TEMP_MAX_LIMIT_WRITE,[temp])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_load_status(self,ID,status):
-		packet=makePacket(ID,SERVO_LOAD_OR_UNLOAD_WRITE,[status])
-		self.uart.write(bytearray(packet))
+	def set_load_status(self,ID,status, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_LOAD_OR_UNLOAD_WRITE,[status])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_led_ctrl(self,ID,mode):
-		packet=makePacket(ID,SERVO_LED_CTRL_WRITE,[mode])
-		self.uart.write(bytearray(packet))
+	def set_led_ctrl(self,ID,mode, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_LED_CTRL_WRITE,[mode])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def set_led_error(self,ID,fault):
-		packet=makePacket(ID,SERVO_LED_ERROR_WRITE,[fault])
-		self.uart.write(bytearray(packet))
+	def set_led_error(self,ID,fault, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_LED_ERROR_WRITE,[fault])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def goal_speed(self,ID,speed):
-		
-		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))
-		self.uart.write(bytearray(packet))
+	def goal_speed(self,ID,speed, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
-	def servo_mode(self,ID):
-		packet=makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))
-		self.uart.write(bytearray(packet))
+	def servo_mode(self,ID, rxbuf=15,timeout=1.6):
+		sendPacket(bytearray(makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
 
 #=======================READ METHODS===================
 #every reading method is here
 
-	def read_goal_position(self,ID):
-		data=comread(self.uart,self.dir_com,ID,SERVO_MOVE_TIME_READ)
-		print(data)
-		return data
+	def read_goal_position(self,ID,rxbuf=15,timeout=1.6):
+		resp=sendPacket(bytearray(makePacket(ID, READ,[MODEL_NUMBER])), self.uart, self.dir_com, self.rtime, rxbuf,timeout)
+		return resp
 
-
-	def sendPacket(self, packet, uart=self.uart, dir_com=self.dir_com, rtime=self.rtime, rxbuf=15):
-		dir_com.value(1) #turn on so packet is sent
-		uart.write(packet)
-		
-		#time is traced in order to know when to listen
-		tinit=utime.ticks_us()
-		while (utime.ticks_us()-tinit)<rtime:
-			pass
-
-		dir_com.value(0) #off to receive packet
-
-		tinit=utime.ticks_us()
-		while (utime.ticks_us()-tinit)<1600: #timeout of 1600us
-			resp=uart.read(rxbuf)
-			if resp is not None:
-				return list(resp)
-		return None
-
-
-def sendPacket(packet, uart, dir_com, rtime, rxbuf):
+def sendPacket(packet, uart, dir_com, rtime, rxbuf,timeout):
 	dir_com.value(1) #turn on so packet is sent
 	uart.write(packet)
 	
@@ -160,8 +123,8 @@ def sendPacket(packet, uart, dir_com, rtime, rxbuf):
 
 	dir_com.value(0) #off to receive packet
 
-	tinit=utime.ticks_us()
-	while (utime.ticks_us()-tinit)<1600: #timeout of 1600us
+	tinit=utime.ticks_ms()
+	while (utime.ticks_ms()-tinit)<timeout: #timeout of 1600us
 		resp=uart.read(rxbuf)
 		if resp is not None:
 			return list(resp)
@@ -174,8 +137,9 @@ def makePacket(ID, cmd, params=None):
 	else: 
 		length=3
 		packet=[ID,length,cmd]
+	packet=header+packet+[checksum(packet)]
 	print(packet)
-	return header+packet+[checksum(packet)]
+	return packet
 
 def le(h):
 	"""
