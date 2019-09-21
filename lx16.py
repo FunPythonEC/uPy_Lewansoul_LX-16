@@ -151,7 +151,7 @@ class lx16(object):
 		resp=sendPacket(bytearray(makePacket(ID, SERVO_POS_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
 		return resp
 
-	def read_mode(self,ID,rxbuf=15,timeout=5,rtime=500):
+	def read_servo_mode(self,ID,rxbuf=15,timeout=5,rtime=500):
 		resp=sendPacket(bytearray(makePacket(ID, SERVO_OR_MOTOR_MODE_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
 		return resp
 
