@@ -59,10 +59,10 @@ class lx16(object):
 
 #=======================WRITE METHODS===================
 #every writing method is here
-	def goal_position(self,ID,angle,time, rxbuf=15,timeout=5000,rtime=850):
+	def goal_position(self,ID,angle,time, rxbuf=15,timeout=2500,rtime=850):
 		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_TIME_WRITE,le(int(angle*1000/240))+le(int(time)))), self.uart, self.dir_com, rtime, rxbuf,timeout)
 
-	def start_goal_position(self,ID,angle,time, rxbuf=15,timeout=5000, rtime=850):
+	def start_goal_position(self,ID,angle,time, rxbuf=15,timeout=2500, rtime=850):
 		sendPacket(bytearray(makePacket(ID,SERVO_MOVE_TIME_WAIT_WRITE,le(int(angle*1000/240))+le(int(time)))), self.uart, self.dir_com, rtime, rxbuf,timeout)
 
 	def start(self,ID, rxbuf=15,timeout=1.6, rtime=850):
@@ -110,6 +110,65 @@ class lx16(object):
 	def read_goal_position(self,ID,rxbuf=15,timeout=10,rtime=500):
 		resp=sendPacket(bytearray(makePacket(ID, SERVO_MOVE_TIME_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
 		return resp
+
+	def read_wait_goal_position(self,ID,rxbuf=15,timeout=10,rtime=500):
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_MOVE_TIME_WAIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_id(self,ID,rxbuf=15,timeout=10,rtime=500):
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_ID_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_angle_offset():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_ANGLE_OFFSET_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_angle_limit():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_ANGLE_LIMIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_vin_limit():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_MOVE_TIME_WAIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_temp_max_limit():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_VIN_LIMIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_temp_max_limit():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_TEMP_MAX_LIMIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_temp():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_TEMP_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_vin():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_VIN_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_pos():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_POS_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_mode():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_OR_MOTOR_MODE_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_load_status():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_LOAD_OR_UNLOAD_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_led_ctrl():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_LED_CTRL_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+	def read_led_error():
+		resp=sendPacket(bytearray(makePacket(ID, SERVO_LED_ERROR_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
+		return resp
+
+
+
 
 def sendPacket(packet, uart, dir_com, rtime, rxbuf,timeout):
 	dir_com.value(1) #turn on so packet is sent
