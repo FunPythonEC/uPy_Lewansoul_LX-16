@@ -101,7 +101,7 @@ class lx16(object):
 	def goal_speed(self,ID,speed, rxbuf=15,timeout=5, rtime=850):
 		sendPacket(bytearray(makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(1)+le(speed))), self.uart, self.dir_com, rtime, rxbuf,timeout)
 
-	def servo_mode(self,ID, rxbuf=15,timeout=5, rtime=850):
+	def joint_mode(self,ID, rxbuf=15,timeout=5, rtime=850):
 		sendPacket(bytearray(makePacket(ID,SERVO_OR_MOTOR_MODE_WRITE,le(0)+le(0))), self.uart, self.dir_com, rtime, rxbuf,timeout)
 
 #=======================READ METHODS===================
@@ -196,7 +196,6 @@ def makePacket(ID, cmd, params=None):
 		length=3
 		packet=[ID,length,cmd]
 	packet=header+packet+[checksum(packet)]
-	print(packet)
 	return packet
 
 def le(h):
