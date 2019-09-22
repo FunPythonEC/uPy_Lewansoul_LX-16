@@ -42,6 +42,26 @@ For the methods related to `goal_position`, the parameter `timeout` already has 
 | `goal_speed(ID,speed)`                  | Puts the servo in a mode like a DC motor. Where `speed` takes values between 0~1000. 1000 being the maximum value. If it is defined as negative. It turns the other way. |
 | `joint_mode(ID)`                        | Puts the servo in joint mode, meaning it is like a normal servo, that can be used with `goal_position(angle,time)` method. This is saved even if the servo is shutdowned. |
 
+### Reading Methods
+
+| Method | Description |
+|-------------|------------------|
+| `read_goal_position(ID)` | Returns the last angle and time of turn requested. |
+| `read_wait_goal_position(ID)` | Returns the goal position requested to wait. |
+| `read_id(ID)` | Returns the ID of the servo. |
+| `read_angle_offset(ID)` | Returns the offset angle. |
+| `read_angle_limit(ID)` | Returns the angle limit. |
+| `read_vin_limit(ID)` | Returns the voltage of input limits. |
+| `read_temp_max_limit(ID)` | Returns the max temperature the Servo, degree Celsius. |
+| `read_temp(ID)` | Returns the temperature of the servo. |
+| `read_vin(ID)` | Returns the voltage input of the servo. |
+| `read_pos(ID)` | Returns the current position of the servo. |
+| `read_servo_mode(ID)` | Returns the mode of the servo. |
+| `read_load_status(ID)` | Returns the load status of the servo. |
+| `read_led_ctrl(ID)` | Returns the control of the led. |
+| `read_led_error(ID)` | Returns the error of the led. |
+
+
 
 ## License
 
