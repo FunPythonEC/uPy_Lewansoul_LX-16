@@ -128,10 +128,6 @@ class lx16(object):
 		return resp
 
 	def read_vin_limit(self,ID,rxbuf=15,timeout=5,rtime=500):
-		resp=sendPacket(bytearray(makePacket(ID, SERVO_MOVE_TIME_WAIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
-		return resp
-
-	def read_temp_max_limit(self,ID,rxbuf=15,timeout=5,rtime=500):
 		resp=sendPacket(bytearray(makePacket(ID, SERVO_VIN_LIMIT_READ)), self.uart, self.dir_com, rtime, rxbuf,timeout)
 		return resp
 
